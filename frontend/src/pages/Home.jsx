@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useState } from "react";
 import axios from "axios";
 
@@ -34,8 +35,10 @@ function Home() {
       <ul>
         {results.map((item, index) => (
           <li key={index}>
-            <strong>{item.name}</strong> (ID: {item.id})
-          </li>
+          <Link to={`/disease/${item.id}`}>
+            <strong>{item.name}</strong>
+          </Link>
+        </li>
         ))}
       </ul>
     </div>
