@@ -1,5 +1,12 @@
-require('dotenv').config()
+require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
+
+app.use(
+  cors({
+    origin: "https://patient-voices-frontend.onrender.com",
+  })
+);
 
 const userRoutes = require("./routes/users");
 const reviewRoutes = require("./routes/reviews");
