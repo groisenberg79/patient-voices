@@ -1,27 +1,16 @@
-import { jwtDecode } from "jwt-decode";
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
+import { useAuth } from "../context/AuthContext";
 
 function DiseasePage() {
   const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
   const location = useLocation();
   const diseaseName = location.state?.name || "Unknown disease";
-  const [userId, setUserId] = useState(null);
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        setUserId(decoded.userId);
-      } catch {
-        console.warn("Invalid token");
-      }
-    }
-  }, []);
+  const { user, token } = useAuth();
   
   const [reviews, setReviews] = useState([]);
-  const hasReviewed = reviews.some((review) => review.user_id === userId);
+  const hasReviewed = reviews.some((review) => review.user_id === user?.userId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
@@ -51,8 +40,6 @@ function DiseasePage() {
     setSubmitSuccess("");
 
     try {
-      const token = localStorage.getItem("token");
-
       await submitReview({
         token,
         api_id,
@@ -104,7 +91,7 @@ function DiseasePage() {
       <hr />
       <h3>Leave a Review</h3>
 
-      {userId && !hasReviewed ? (
+      {user?.userId && !hasReviewed ? (
         <form onSubmit={handleSubmit}>
           <label>
             Rating (1–5):
@@ -134,7 +121,7 @@ function DiseasePage() {
         <p><em>You’ve already submitted a review for this condition.</em></p>
       ) : null}
 
-      {!userId && (
+      {!user?.userId && (
         <p style={{ color: "gray" }}><em>Please log in to submit a review.</em></p>
       )}
     </div>
