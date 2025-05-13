@@ -55,7 +55,11 @@ function DiseasePage() {
       setReviews(updatedReviews);
     } catch (err) {
       console.error(err);
-      setSubmitError("Could not submit review. Are you logged in?");
+      if (err.response?.status === 400 || err.response?.status === 403) {
+        setSubmitError("You have already submitted a review for this disease.");
+      } else {
+        setSubmitError("Could not submit review. Are you logged in?");
+      }
     }
   };
 
