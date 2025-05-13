@@ -19,7 +19,12 @@ function Navbar() {
           <Link to="/register" style={{ marginRight: "10px" }}>Register</Link>
         </>
       ) : (
-        <button onClick={handleLogout}>Logout</button>
+        <>
+          <button onClick={handleLogout}>Logout</button>
+          <span style={{ marginLeft: "10px", fontStyle: "italic" }}>
+            Logged in as: {user.email}
+          </span>
+        </>
       )}
     </nav>
   );
