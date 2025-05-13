@@ -1,4 +1,4 @@
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
