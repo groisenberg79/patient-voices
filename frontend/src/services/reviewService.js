@@ -14,3 +14,23 @@ export const fetchReviewsByApiId = async (api_id) => {
     }
   }
 };
+
+export const submitReview = async ({ token, api_id, name, description, severity, comment }) => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_BACKEND_URL}/api/reviews`,
+    {
+      api_id,
+      name,
+      description,
+      severity,
+      comment,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return response.data;
+};

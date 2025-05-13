@@ -1,12 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchReviewsByApiId } from "../services/reviewService";
+import axios from "axios";
+import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
 
 function DiseasePage() {
   const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [comment, setComment] = useState("");
+  const [severity, setSeverity] = useState(3);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -23,6 +28,35 @@ function DiseasePage() {
 
     loadReviews();
   }, [api_id]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitError("");
+    setSubmitSuccess("");
+
+    try {
+      const token = localStorage.getItem("token");
+
+      await submitReview({
+        token,
+        api_id,
+        name: "Unknown disease", // ideally this would be passed from the search results
+        description: "",
+        severity,
+        comment,
+      });
+
+      setSubmitSuccess("Review submitted!");
+      setComment("");
+      setSeverity(3);
+
+      const updatedReviews = await fetchReviewsByApiId(api_id);
+      setReviews(updatedReviews);
+    } catch (err) {
+      console.error(err);
+      setSubmitError("Could not submit review. Are you logged in?");
+    }
+  };
 
   if (loading) return <p>Loading reviews...</p>;
   if (error) return <p>Something went wrong. Please try again later.</p>;
@@ -46,6 +80,35 @@ function DiseasePage() {
           ))}
         </ul>
       )}
+
+      <hr />
+      <h3>Leave a Review</h3>
+
+      <form onSubmit={handleSubmit}>
+        <label>
+          Rating (1–5):
+          <input
+            type="number"
+            min="1"
+            max="5"
+            value={severity}
+            onChange={(e) => setSeverity(Number(e.target.value))}
+          />
+        </label>
+        <br />
+        <label>
+          Comment:
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+          />
+        </label>
+        <br />
+        <button type="submit">Submit Review</button>
+
+        {submitSuccess && <p style={{ color: "green" }}>{submitSuccess}</p>}
+        {submitError && <p style={{ color: "red" }}>{submitError}</p>}
+      </form>
     </div>
   );
 }
