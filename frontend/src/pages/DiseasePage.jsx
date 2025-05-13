@@ -19,8 +19,9 @@ function DiseasePage() {
       }
     }
   }, []);
-  const hasReviewed = reviews.some((review) => review.user_id === userId);
+  
   const [reviews, setReviews] = useState([]);
+  const hasReviewed = reviews.some((review) => review.user_id === userId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
