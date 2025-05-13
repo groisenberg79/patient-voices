@@ -3,6 +3,7 @@ const {
   createDisease,
   createReview,
   getReviewsByDiseaseId,
+  hasUserReviewedDisease,
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
@@ -15,7 +16,13 @@ const submitReview = async (req, res) => {
     if (!disease) {
       disease = await createDisease(api_id, name, description);
     }
+    const alreadyReviewed = await hasUserReviewedDisease(userId, disease.id);
 
+    if (alreadyReviewed) {
+      return res
+        .status(400)
+        .json({ error: "You have already reviewed this disease." });
+    }
     const newReview = await createReview(userId, disease.id, severity, comment);
 
     res.status(201).json(newReview);

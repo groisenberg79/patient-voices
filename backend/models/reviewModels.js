@@ -31,9 +31,18 @@ const getReviewsByDiseaseId = async (diseaseId) => {
   return result.rows;
 };
 
+const hasUserReviewedDisease = async (userId, diseaseId) => {
+  const result = await pool.query(
+    "SELECT 1 FROM reviews WHERE user_id = $1 AND disease_id = $2",
+    [userId, diseaseId]
+  );
+  return result.rows.length > 0;
+};
+
 module.exports = {
   findDiseaseByApiId,
   createDisease,
   createReview,
   getReviewsByDiseaseId,
+  hasUserReviewedDisease,
 };
