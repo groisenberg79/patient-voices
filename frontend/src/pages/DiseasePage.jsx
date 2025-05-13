@@ -1,3 +1,4 @@
+import jwtDecode from "jwt-decode";
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
@@ -6,6 +7,19 @@ function DiseasePage() {
   const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
   const location = useLocation();
   const diseaseName = location.state?.name || "Unknown disease";
+  const [userId, setUserId] = useState(null);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        setUserId(decoded.userId);
+      } catch {
+        console.warn("Invalid token");
+      }
+    }
+  }, []);
+  const hasReviewed = reviews.some((review) => review.user_id === userId);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -89,31 +103,35 @@ function DiseasePage() {
       <hr />
       <h3>Leave a Review</h3>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Rating (1–5):
-          <input
-            type="number"
-            min="1"
-            max="5"
-            value={severity}
-            onChange={(e) => setSeverity(Number(e.target.value))}
-          />
-        </label>
-        <br />
-        <label>
-          Comment:
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
-        </label>
-        <br />
-        <button type="submit">Submit Review</button>
+      {!hasReviewed ? (
+        <form onSubmit={handleSubmit}>
+          <label>
+            Rating (1–5):
+            <input
+              type="number"
+              min="1"
+              max="5"
+              value={severity}
+              onChange={(e) => setSeverity(Number(e.target.value))}
+            />
+          </label>
+          <br />
+          <label>
+            Comment:
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+            />
+          </label>
+          <br />
+          <button type="submit">Submit Review</button>
 
-        {submitSuccess && <p style={{ color: "green" }}>{submitSuccess}</p>}
-        {submitError && <p style={{ color: "red" }}>{submitError}</p>}
-      </form>
+          {submitSuccess && <p style={{ color: "green" }}>{submitSuccess}</p>}
+          {submitError && <p style={{ color: "red" }}>{submitError}</p>}
+        </form>
+      ) : (
+        <p><em>You’ve already submitted a review for this condition.</em></p>
+      )}
     </div>
   );
 }
