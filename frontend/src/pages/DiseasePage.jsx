@@ -104,7 +104,7 @@ function DiseasePage() {
       <hr />
       <h3>Leave a Review</h3>
 
-      {!hasReviewed ? (
+      {userId && !hasReviewed ? (
         <form onSubmit={handleSubmit}>
           <label>
             Rating (1–5):
@@ -130,8 +130,12 @@ function DiseasePage() {
           {submitSuccess && <p style={{ color: "green" }}>{submitSuccess}</p>}
           {submitError && <p style={{ color: "red" }}>{submitError}</p>}
         </form>
-      ) : (
+      ) : hasReviewed ? (
         <p><em>You’ve already submitted a review for this condition.</em></p>
+      ) : null}
+
+      {!userId && (
+        <p style={{ color: "gray" }}><em>Please log in to submit a review.</em></p>
       )}
     </div>
   );
