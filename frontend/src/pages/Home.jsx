@@ -1,10 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import axios from "axios";
 
 function Home() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
+  const navigate = useNavigate();
 
   const handleSearch = async () => {
     if (!query) return;
@@ -34,11 +35,17 @@ function Home() {
 
       <ul>
         {results.map((item, index) => (
-          <li key={index}>
-          <Link to={`/disease/${item.id}`}>
+          <li
+            key={index}
+            style={{ cursor: 'pointer', color: 'blue' }}
+            onClick={() =>
+              navigate(`/disease/${item.id}`, {
+                state: { name: item.name }
+              })
+            }
+          >
             <strong>{item.name}</strong>
-          </Link>
-        </li>
+          </li>
         ))}
       </ul>
     </div>

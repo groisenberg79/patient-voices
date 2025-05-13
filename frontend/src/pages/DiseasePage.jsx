@@ -1,10 +1,12 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
 
 function DiseasePage() {
   const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
+  const location = useLocation();
+  const diseaseName = location.state?.name || "Unknown disease";
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -40,7 +42,7 @@ function DiseasePage() {
       await submitReview({
         token,
         api_id,
-        name: "Unknown disease", // ideally this would be passed from the search results
+        name: diseaseName,
         description: "",
         severity,
         comment,

@@ -7,6 +7,7 @@ const app = express();
 app.use(
   cors({
     origin: "https://patient-voices-frontend.onrender.com",
+    credentials: true,
   })
 );
 
