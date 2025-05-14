@@ -4,7 +4,7 @@ const {
   rateReview,
   getReviewRating,
 } = require("../controllers/reviewRatingController");
-const authenticateToken = require("../middleware/authenticateToken");
+const authenticateToken = require("../middleware/auth");
 
 router.post("/:review_id", authenticateToken, rateReview); // ✅ must be a function
 router.get("/:review_id", getReviewRating);
