@@ -8,8 +8,9 @@ function DiseasePage() {
   const location = useLocation();
   const diseaseName = location.state?.name || "Unknown disease";
   const { user, token } = useAuth();
-  
+
   const [reviews, setReviews] = useState([]);
+  const [avgSeverity, setAvgSeverity] = useState(null);
   const hasReviewed = reviews.some((review) => review.user_id === user?.userId);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -22,7 +23,8 @@ function DiseasePage() {
     const loadReviews = async () => {
       try {
         const data = await fetchReviewsByApiId(api_id);
-        setReviews(data);
+        setReviews(data.reviews);
+        setAvgSeverity(data.avgSeverity);
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
         setError(true);
@@ -72,6 +74,12 @@ function DiseasePage() {
     <div>
       <h2>Reviews for Disease ID: {api_id}</h2>
 
+      {avgSeverity && (
+        <p>
+          <strong>Average severity:</strong> {avgSeverity.toFixed(1)} / 5
+        </p>
+      )}
+
       {reviews.length === 0 ? (
         <p>
           <em>No reviews yet. Be the first to review this condition.</em>
@@ -118,11 +126,15 @@ function DiseasePage() {
           {submitError && <p style={{ color: "red" }}>{submitError}</p>}
         </form>
       ) : hasReviewed ? (
-        <p><em>You’ve already submitted a review for this condition.</em></p>
+        <p>
+          <em>You’ve already submitted a review for this condition.</em>
+        </p>
       ) : null}
 
       {!user?.userId && (
-        <p style={{ color: "gray" }}><em>Please log in to submit a review.</em></p>
+        <p style={{ color: "gray" }}>
+          <em>Please log in to submit a review.</em>
+        </p>
       )}
     </div>
   );

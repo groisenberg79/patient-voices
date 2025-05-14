@@ -4,6 +4,7 @@ const {
   createReview,
   getReviewsByDiseaseId,
   hasUserReviewedDisease,
+  getAverageSeverity,
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
@@ -45,7 +46,8 @@ const fetchReviews = async (req, res) => {
     }
 
     const reviews = await getReviewsByDiseaseId(disease.id);
-    res.json(reviews);
+    const avgSeverity = await getAverageSeverity(disease.id);
+    res.json(reviews, avgSeverity);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error fetching reviews" });

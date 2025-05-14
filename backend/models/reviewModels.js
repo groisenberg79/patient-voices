@@ -39,10 +39,19 @@ const hasUserReviewedDisease = async (userId, diseaseId) => {
   return result.rows.length > 0;
 };
 
+const getAverageSeverity = async (diseaseId) => {
+  const result = await pool.query(
+    "SELECT AVG(severity) AS avg FROM reviews WHERE disease_id = $1",
+    [diseaseId]
+  );
+  return result.rows[0].avg;
+};
+
 module.exports = {
   findDiseaseByApiId,
   createDisease,
   createReview,
   getReviewsByDiseaseId,
   hasUserReviewedDisease,
+  getAverageSeverity
 };
