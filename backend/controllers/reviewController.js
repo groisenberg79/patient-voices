@@ -47,7 +47,7 @@ const fetchReviews = async (req, res) => {
 
     const reviews = await getReviewsByDiseaseId(disease.id);
     const avgSeverity = await getAverageSeverity(disease.id);
-    res.json(reviews, avgSeverity);
+    res.json({ reviews, avgSeverity });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error fetching reviews" });
