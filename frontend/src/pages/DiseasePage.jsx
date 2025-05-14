@@ -26,7 +26,8 @@ function DiseasePage() {
     const loadReviews = async () => {
       try {
         const data = await fetchReviewsByApiId(api_id);
-        setReviews(data.reviews || data); // Fallback in case it's just an array
+        console.log("Fetched review data:", data); // 👈 Add this
+        setReviews(data.reviews || data);
         setAvgSeverity(data.avgSeverity || null);
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
