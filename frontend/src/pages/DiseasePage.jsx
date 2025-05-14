@@ -11,9 +11,10 @@ function DiseasePage() {
 
   const [reviews, setReviews] = useState([]);
   const [avgSeverity, setAvgSeverity] = useState(null);
-  const hasReviewed = Array.isArray(reviews) && user
-    ? reviews.some((review) => review.user_id === user.userId)
-    : false;
+  const hasReviewed =
+    Array.isArray(reviews) && user
+      ? reviews.some((review) => review.user_id === user.userId)
+      : false;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
@@ -77,7 +78,7 @@ function DiseasePage() {
     <div>
       <h2>Reviews for Disease ID: {api_id}</h2>
 
-      {avgSeverity && (
+      {typeof avgSeverity === "number" && (
         <p>
           <strong>Average severity:</strong> {avgSeverity.toFixed(1)} / 5
         </p>
