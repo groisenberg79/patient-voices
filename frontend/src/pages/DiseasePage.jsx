@@ -79,9 +79,10 @@ function DiseasePage() {
     <div>
       <h2>Reviews for Disease ID: {api_id}</h2>
 
-      {typeof avgSeverity === "number" && (
+      {avgSeverity && !isNaN(avgSeverity) && (
         <p>
-          <strong>Average severity:</strong> {avgSeverity.toFixed(1)} / 5
+          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} /
+          5
         </p>
       )}
 
