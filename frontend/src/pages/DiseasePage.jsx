@@ -11,7 +11,9 @@ function DiseasePage() {
 
   const [reviews, setReviews] = useState([]);
   const [avgSeverity, setAvgSeverity] = useState(null);
-  const hasReviewed = reviews.some((review) => review.user_id === user?.userId);
+  const hasReviewed = Array.isArray(reviews) && user
+    ? reviews.some((review) => review.user_id === user.userId)
+    : false;
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
@@ -23,8 +25,8 @@ function DiseasePage() {
     const loadReviews = async () => {
       try {
         const data = await fetchReviewsByApiId(api_id);
-        setReviews(data.reviews);
-        setAvgSeverity(data.avgSeverity);
+        setReviews(data.reviews || data); // Fallback in case it's just an array
+        setAvgSeverity(data.avgSeverity || null);
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
         setError(true);
@@ -57,6 +59,7 @@ function DiseasePage() {
 
       const updatedReviews = await fetchReviewsByApiId(api_id);
       setReviews(updatedReviews);
+      setAvgSeverity(updatedReviews.avgSeverity);
     } catch (err) {
       console.error(err);
       if (err.response?.status === 400 || err.response?.status === 403) {
