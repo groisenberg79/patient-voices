@@ -59,8 +59,8 @@ function DiseasePage() {
       setSeverity(3);
 
       const updatedReviews = await fetchReviewsByApiId(api_id);
-      setReviews(updatedReviews);
-      setAvgSeverity(updatedReviews.avgSeverity);
+      setReviews(updatedReviews.reviews || updatedReviews);
+      setAvgSeverity(updatedReviews.avgSeverity || null);
     } catch (err) {
       console.error(err);
       if (err.response?.status === 400 || err.response?.status === 403) {
