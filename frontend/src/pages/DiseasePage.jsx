@@ -13,6 +13,18 @@ function DiseasePage() {
   const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
   const location = useLocation();
   const diseaseName = location.state?.name || "Unknown disease";
+
+  if (api_id === "unknown") {
+    return (
+      <div>
+        <h2>Condition Not Found</h2>
+        <p>
+          We couldn't find any information on "<strong>{diseaseName}</strong>".
+          Please try another search.
+        </p>
+      </div>
+    );
+  }
   const { user, token } = useAuth();
 
   const [reviews, setReviews] = useState([]);

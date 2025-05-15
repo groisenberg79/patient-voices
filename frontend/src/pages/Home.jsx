@@ -15,6 +15,19 @@ function Home() {
         { params: { name: query } }
       );
       setResults(response.data);
+
+      if (response.data.length > 0) {
+        // Navigate to the first matched disease
+        const item = response.data[0];
+        navigate(`/disease/${item.id}`, {
+          state: { name: item.name }
+        });
+      } else {
+        // Navigate to a 'not found' fallback route
+        navigate(`/disease/unknown`, {
+          state: { name: query }
+        });
+      }
     } catch (error) {
       console.error("Search failed:", error);
     }
