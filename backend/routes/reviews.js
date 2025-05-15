@@ -3,6 +3,7 @@ const router = express.Router();
 const {
   submitReview,
   fetchReviews,
+  deleteReview,
 } = require("../controllers/reviewController");
 const { authenticateToken } = require("../middleware/auth");
 
