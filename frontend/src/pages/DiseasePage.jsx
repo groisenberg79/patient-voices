@@ -232,13 +232,13 @@ function DiseasePage() {
               <br />
               {user?.userId && user.userId !== review.user_id && (
                 <>
-                  {!ratedReviews.has(review.id) ? (
+                  {!ratedReviews.has(review.id) && !recentlyRated.has(review.id) ? (
                     <button onClick={() => handleRateReview(review.id)}>
                       Helpful
                     </button>
-                  ) : (
+                  ) : recentlyRated.has(review.id) ? (
                     <p style={{ color: "green" }}>Thanks for your feedback!</p>
-                  )}
+                  ) : null}
                 </>
               )}
               {user?.userId === review.user_id && (
