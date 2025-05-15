@@ -1,4 +1,5 @@
 import axios from "axios";
+const BASE_URL = "https://patient-voices-backend.onrender.com";
 
 export const fetchReviewsByApiId = async (api_id) => {
   try {
@@ -33,4 +34,22 @@ export const submitReview = async ({ token, api_id, name, description, severity,
   );
 
   return response.data;
+};
+
+export const rateReview = async (reviewId, token) => {
+  const res = await axios.post(
+    `${BASE_URL}/api/review-ratings/${reviewId}`,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};
+
+export const fetchReviewRating = async (reviewId) => {
+  const res = await axios.get(`${BASE_URL}/api/review-ratings/${reviewId}`);
+  return res.data.total;
 };

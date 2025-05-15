@@ -1,6 +1,6 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { submitReview, fetchReviewsByApiId } from "../services/reviewService";
+import { submitReview, fetchReviewsByApiId, rateReview, fetchReviewRating } from "../services/reviewService";
 import { useAuth } from "../context/AuthContext";
 
 function DiseasePage() {
@@ -10,7 +10,12 @@ function DiseasePage() {
   const { user, token } = useAuth();
 
   const [reviews, setReviews] = useState([]);
+  const [reviewRatings, setReviewRatings] = useState({});
   const [avgSeverity, setAvgSeverity] = useState(null);
+  // Track which reviews the user has already rated
+  const [ratedReviews, setRatedReviews] = useState(new Set());
+  // Track feedback message after voting
+  const [voteMessage, setVoteMessage] = useState({});
   const hasReviewed =
     Array.isArray(reviews) && user
       ? reviews.some((review) => review.user_id === user.userId)
@@ -29,6 +34,12 @@ function DiseasePage() {
         console.log("Fetched review data:", data); // 👈 Add this
         setReviews(data.reviews || data);
         setAvgSeverity(data.avgSeverity || null);
+        // Fetch and store rating counts for each review
+        const ratings = {};
+        for (const review of data.reviews || []) {
+          ratings[review.id] = await fetchReviewRating(review.id);
+        }
+        setReviewRatings(ratings);
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
         setError(true);
@@ -39,6 +50,18 @@ function DiseasePage() {
 
     loadReviews();
   }, [api_id]);
+
+  const handleRateReview = async (reviewId) => {
+    try {
+      await rateReview(reviewId, token);
+      const updatedCount = await fetchReviewRating(reviewId);
+      setReviewRatings((prev) => ({ ...prev, [reviewId]: updatedCount }));
+      setRatedReviews((prev) => new Set(prev).add(reviewId));
+      setVoteMessage((prev) => ({ ...prev, [reviewId]: "Thanks for your feedback!" }));
+    } catch (err) {
+      console.error("Rating error:", err);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -96,6 +119,17 @@ function DiseasePage() {
               <strong>Rating:</strong> {review.severity}/5
               <br />
               <strong>Comment:</strong> {review.comment}
+              <br />
+              <strong>Helpful votes:</strong> {reviewRatings[review.id] || 0}
+              <br />
+              {user?.userId && !ratedReviews.has(review.id) && (
+                <button
+                  onClick={() => handleRateReview(review.id)}
+                >
+                  Helpful
+                </button>
+              )}
+              {voteMessage[review.id] && <p style={{ color: "green" }}>{voteMessage[review.id]}</p>}
             </li>
           ))}
         </ul>
