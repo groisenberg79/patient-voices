@@ -140,7 +140,7 @@ function DiseasePage() {
                   Helpful
                 </button>
               )}
-              {user?.userId && ratedReviews.has(review.id) && (
+              {user?.userId && ratedReviews?.has?.(review.id) && reviews.some(r => r.id === review.id) && (
                 <p style={{ color: "green" }}>Thanks for your feedback!</p>
               )}
             </li>
