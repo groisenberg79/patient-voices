@@ -10,49 +10,6 @@ import {
 } from "../services/reviewService";
 import { useAuth } from "../context/AuthContext";
 
-const loadReviews = async (
-  api_id,
-  user,
-  token,
-  setReviews,
-  setAvgSeverity,
-  setReviewRatings,
-  setRatedReviews,
-  setError,
-  setLoading
-) => {
-  console.log("🚀 loadReviews called with:", { api_id, user, token });
-  try {
-    const data = await fetchReviewsByApiId(api_id);
-    console.log("Fetched review data:", data);
-    const reviewList = data.reviews || data;
-    setReviews(reviewList);
-    setAvgSeverity(data.avgSeverity || null);
-
-    const ratings = {};
-    for (const review of reviewList) {
-      ratings[review.id] = await fetchReviewRating(review.id);
-    }
-    setReviewRatings(ratings);
-
-    if (user && token) {
-      const ratedIds = await fetchRatedReviewIds(user.userId, token);
-      const ratedSet = new Set(
-        ratedIds.filter((id) => reviewList.some((r) => r.id === id))
-      );
-      setRatedReviews(ratedSet);
-    } else {
-      setRatedReviews(new Set());
-    }
-  } catch (err) {
-    console.error("Error fetching reviews:", err.message);
-    console.error("api_id used:", api_id);
-    throw err; // rethrow so we can trace it better
-  } finally {
-    setLoading(false);
-  }
-};
-
 function DiseasePage() {
   const { id: api_id } = useParams();
   const location = useLocation();
@@ -72,17 +29,45 @@ function DiseasePage() {
   const [submitSuccess, setSubmitSuccess] = useState("");
 
   useEffect(() => {
-    loadReviews(
-      api_id,
-      user,
-      token,
-      setReviews,
-      setAvgSeverity,
-      setReviewRatings,
-      setRatedReviews,
-      setError,
-      setLoading
-    );
+    const loadReviews = async () => {
+      console.log("🚀 loadReviews called with:", { api_id, user, token });
+      try {
+        const data = await fetchReviewsByApiId(api_id);
+        console.log("Fetched review data:", data);
+        const reviewList = data.reviews || data;
+        setReviews(reviewList);
+        setAvgSeverity(data.avgSeverity || null);
+
+        const ratings = {};
+        for (const review of reviewList) {
+          ratings[review.id] = await fetchReviewRating(review.id);
+        }
+        setReviewRatings(ratings);
+
+        if (user && token) {
+          const ratedIds = await fetchRatedReviewIds(user.userId, token);
+          const ratedSet = new Set(
+            ratedIds.filter((id) => reviewList.some((r) => r.id === id))
+          );
+          setRatedReviews(ratedSet);
+        } else {
+          setRatedReviews(new Set());
+        }
+      } catch (err) {
+        console.error("Error fetching reviews:", err.message);
+        console.error("api_id used:", api_id);
+        if (err.response?.status === 404) {
+          setReviews([]);
+          setAvgSeverity(null);
+        } else {
+          setError(true);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadReviews();
   }, [api_id, user, token]);
 
   const hasReviewed =
