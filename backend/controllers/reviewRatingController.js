@@ -2,6 +2,7 @@ const {
   addReviewRating,
   getReviewRatingCount,
   hasUserRated,
+  getUserRatedReviewIds,
 } = require("../models/reviewRatingsModel");
 
 const rateReview = async (req, res) => {
@@ -38,4 +39,16 @@ const getReviewRating = async (req, res) => {
   }
 };
 
-module.exports = { rateReview, getReviewRating };
+const getRatedReviewIdsByUser = async (req, res) => {
+  const userId = req.params.user_id;
+
+  try {
+    const ratedReviewIds = await getUserRatedReviewIds(userId);
+    res.json({ ratedReviewIds });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch rated reviews" });
+  }
+};
+
+module.exports = { rateReview, getReviewRating, getRatedReviewIdsByUser };

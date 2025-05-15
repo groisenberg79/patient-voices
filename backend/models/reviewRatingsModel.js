@@ -30,8 +30,17 @@ const hasUserRated = async (userId, reviewId) => {
   return result.rows.length > 0;
 };
 
+const getUserRatedReviewIds = async (userId) => {
+  const result = await pool.query(
+    "SELECT review_id FROM review_ratings WHERE user_id = $1",
+    [userId]
+  );
+  return result.rows.map((row) => row.review_id);
+};
+
 module.exports = {
   addReviewRating,
   getReviewRatingCount,
   hasUserRated,
+  getUserRatedReviewIds,
 };
