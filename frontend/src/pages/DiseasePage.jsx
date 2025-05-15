@@ -21,6 +21,7 @@ const loadReviews = async (
   setError,
   setLoading
 ) => {
+  console.log("🚀 loadReviews called with:", { api_id, user, token });
   try {
     const data = await fetchReviewsByApiId(api_id);
     console.log("Fetched review data:", data);
