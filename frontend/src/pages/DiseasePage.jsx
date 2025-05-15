@@ -10,9 +10,27 @@ import {
 import { useAuth } from "../context/AuthContext";
 
 function DiseasePage() {
-  const { id: api_id } = useParams(); // rename 'id' to 'api_id' for clarity
+  const { id: api_id } = useParams();
   const location = useLocation();
   const diseaseName = location.state?.name || "Unknown disease";
+
+  const { user, token } = useAuth();
+  const [reviews, setReviews] = useState([]);
+  const [reviewRatings, setReviewRatings] = useState({});
+  const [avgSeverity, setAvgSeverity] = useState(null);
+  const [ratedReviews, setRatedReviews] = useState(new Set());
+  const [recentlyRated, setRecentlyRated] = useState(new Set());
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [comment, setComment] = useState("");
+  const [severity, setSeverity] = useState(3);
+  const [submitError, setSubmitError] = useState("");
+  const [submitSuccess, setSubmitSuccess] = useState("");
+
+  const hasReviewed =
+    Array.isArray(reviews) && user
+      ? reviews.some((review) => review.user_id === user.userId)
+      : false;
 
   if (api_id === "unknown") {
     return (
@@ -25,24 +43,6 @@ function DiseasePage() {
       </div>
     );
   }
-  const { user, token } = useAuth();
-
-  const [reviews, setReviews] = useState([]);
-  const [reviewRatings, setReviewRatings] = useState({});
-  const [avgSeverity, setAvgSeverity] = useState(null);
-  // Track which reviews the user has already rated
-  const [ratedReviews, setRatedReviews] = useState(new Set());
-  const [recentlyRated, setRecentlyRated] = useState(new Set());
-  const hasReviewed =
-    Array.isArray(reviews) && user
-      ? reviews.some((review) => review.user_id === user.userId)
-      : false;
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-  const [comment, setComment] = useState("");
-  const [severity, setSeverity] = useState(3);
-  const [submitError, setSubmitError] = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState("");
 
   useEffect(() => {
     const loadReviews = async () => {
