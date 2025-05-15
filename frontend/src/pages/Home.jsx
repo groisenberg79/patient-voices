@@ -14,16 +14,14 @@ function Home() {
         `${import.meta.env.VITE_BACKEND_URL}/api/disease/search`,
         { params: { name: query } }
       );
-      setResults(response.data);
-
-      if (response.data.length > 0) {
-        // Navigate to the first matched disease
+      if (response.data.length === 1) {
         const item = response.data[0];
         navigate(`/disease/${item.id}`, {
           state: { name: item.name }
         });
+      } else if (response.data.length > 1) {
+        setResults(response.data); // show multiple options
       } else {
-        // Navigate to a 'not found' fallback route
         navigate(`/disease/unknown`, {
           state: { name: query }
         });
