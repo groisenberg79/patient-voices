@@ -20,6 +20,7 @@ function DiseasePage() {
   const [avgSeverity, setAvgSeverity] = useState(null);
   // Track which reviews the user has already rated
   const [ratedReviews, setRatedReviews] = useState(new Set());
+  const [recentlyRated, setRecentlyRated] = useState(new Set());
   const hasReviewed =
     Array.isArray(reviews) && user
       ? reviews.some((review) => review.user_id === user.userId)
@@ -72,6 +73,7 @@ function DiseasePage() {
       const updatedCount = await fetchReviewRating(reviewId);
       setReviewRatings((prev) => ({ ...prev, [reviewId]: updatedCount }));
       setRatedReviews((prev) => new Set(prev).add(reviewId));
+      setRecentlyRated((prev) => new Set(prev).add(reviewId));
     } catch (err) {
       console.error("Rating error:", err);
     }
@@ -141,9 +143,9 @@ function DiseasePage() {
                 <>
                   {!ratedReviews.has(review.id) ? (
                     <button onClick={() => handleRateReview(review.id)}>Helpful</button>
-                  ) : (
+                  ) : recentlyRated.has(review.id) ? (
                     <p style={{ color: "green" }}>Thanks for your feedback!</p>
-                  )}
+                  ) : null}
                 </>
               )}
             </li>
