@@ -20,12 +20,16 @@ function Register() {
         password,
       });
 
-      if (response.data && response.data.token) {
-        const { token } = response.data;
-        login(token);
-        setSuccess("Registration successful! You are now logged in.");
+      if (response.data) {
+        if (response.data.token) {
+          const { token } = response.data;
+          login(token);
+          setSuccess("Registration successful! You are now logged in.");
+        } else {
+          setSuccess("Registration successful! You can now log in.");
+        }
       } else {
-        setError("Registration failed. No token returned.");
+        setError("Registration failed. Unexpected response from server.");
       }
     } catch (err) {
       console.error(err);
