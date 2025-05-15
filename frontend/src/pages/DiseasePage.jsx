@@ -48,10 +48,12 @@ function DiseasePage() {
 
         if (user && token) {
           const ratedIds = await fetchRatedReviewIds(user.userId, token);
-          const validRatedIds = ratedIds.filter((id) =>
-            reviewList.some((r) => r.id === id)
+          const ratedSet = new Set(
+            ratedIds.filter((id) => reviewList.some((r) => r.id === id))
           );
-          setRatedReviews(new Set(validRatedIds));
+          setRatedReviews(ratedSet);
+        } else {
+          setRatedReviews(new Set());
         }
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
@@ -135,13 +137,14 @@ function DiseasePage() {
               <br />
               <strong>Helpful votes:</strong> {reviewRatings[review.id] || 0}
               <br />
-              {user?.userId && !ratedReviews.has(review.id) && (
-                <button onClick={() => handleRateReview(review.id)}>
-                  Helpful
-                </button>
-              )}
-              {user?.userId && ratedReviews?.has?.(review.id) && reviews.some(r => r.id === review.id) && (
-                <p style={{ color: "green" }}>Thanks for your feedback!</p>
+              {user?.userId && (
+                <>
+                  {!ratedReviews.has(review.id) ? (
+                    <button onClick={() => handleRateReview(review.id)}>Helpful</button>
+                  ) : (
+                    <p style={{ color: "green" }}>Thanks for your feedback!</p>
+                  )}
+                </>
               )}
             </li>
           ))}
