@@ -46,7 +46,8 @@ const loadReviews = async (
     }
   } catch (err) {
     console.error("Error fetching reviews:", err.message);
-    setError(true);
+    console.error("api_id used:", api_id);
+    throw err; // rethrow so we can trace it better
   } finally {
     setLoading(false);
   }
