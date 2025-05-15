@@ -19,12 +19,20 @@ function Register() {
         email,
         password,
       });
-      const { token } = response.data;
-      login(token);
-      setSuccess("Registration successful! You are now logged in.");
+
+      if (response.data && response.data.token) {
+        const { token } = response.data;
+        login(token);
+        setSuccess("Registration successful! You are now logged in.");
+      } else {
+        setError("Registration failed. No token returned.");
+      }
     } catch (err) {
       console.error(err);
-      setError("Registration failed. Email may already be in use.");
+      const message =
+        err.response?.data?.message ||
+        "Registration failed. Email may already be in use.";
+      setError(message);
     }
   };
 
