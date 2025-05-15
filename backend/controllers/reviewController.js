@@ -5,6 +5,7 @@ const {
   getReviewsByDiseaseId,
   hasUserReviewedDisease,
   getAverageSeverity,
+  deleteReviewByIdAndUser,
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
@@ -53,7 +54,27 @@ const fetchReviews = async (req, res) => {
     res.status(500).json({ error: "Error fetching reviews" });
   }
 };
+
+const deleteReview = async (req, res) => {
+  const reviewId = req.params.review_id;
+  const userId = req.user.userId;
+
+  try {
+    const deleted = await deleteReviewByIdAndUser(reviewId, userId);
+    if (!deleted) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized or review not found" });
+    }
+    res.json({ message: "Review deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting review:", err);
+    res.status(500).json({ error: "Failed to delete review" });
+  }
+};
+
 module.exports = {
   submitReview,
   fetchReviews,
+  deleteReview,
 };

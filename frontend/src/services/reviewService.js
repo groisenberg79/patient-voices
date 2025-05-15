@@ -69,3 +69,11 @@ export const fetchRatedReviewIds = async (userId, token) => {
   });
   return res.data.ratedReviewIds; // array of IDs
 };
+
+export const deleteReview = async (reviewId, token) => {
+  await axios.delete(`${BASE_URL}/api/reviews/${reviewId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};

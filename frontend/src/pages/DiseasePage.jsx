@@ -6,8 +6,50 @@ import {
   rateReview,
   fetchReviewRating,
   fetchRatedReviewIds,
+  deleteReview,
 } from "../services/reviewService";
 import { useAuth } from "../context/AuthContext";
+
+const loadReviews = async (
+  api_id,
+  user,
+  token,
+  setReviews,
+  setAvgSeverity,
+  setReviewRatings,
+  setRatedReviews,
+  setError,
+  setLoading
+) => {
+  try {
+    const data = await fetchReviewsByApiId(api_id);
+    console.log("Fetched review data:", data);
+    const reviewList = data.reviews || data;
+    setReviews(reviewList);
+    setAvgSeverity(data.avgSeverity || null);
+
+    const ratings = {};
+    for (const review of reviewList) {
+      ratings[review.id] = await fetchReviewRating(review.id);
+    }
+    setReviewRatings(ratings);
+
+    if (user && token) {
+      const ratedIds = await fetchRatedReviewIds(user.userId, token);
+      const ratedSet = new Set(
+        ratedIds.filter((id) => reviewList.some((r) => r.id === id))
+      );
+      setRatedReviews(ratedSet);
+    } else {
+      setRatedReviews(new Set());
+    }
+  } catch (err) {
+    console.error("Error fetching reviews:", err.message);
+    setError(true);
+  } finally {
+    setLoading(false);
+  }
+};
 
 function DiseasePage() {
   const { id: api_id } = useParams();
@@ -27,6 +69,20 @@ function DiseasePage() {
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
 
+  useEffect(() => {
+    loadReviews(
+      api_id,
+      user,
+      token,
+      setReviews,
+      setAvgSeverity,
+      setReviewRatings,
+      setRatedReviews,
+      setError,
+      setLoading
+    );
+  }, [api_id, user, token]);
+
   const hasReviewed =
     Array.isArray(reviews) && user
       ? reviews.some((review) => review.user_id === user.userId)
@@ -44,41 +100,6 @@ function DiseasePage() {
     );
   }
 
-  useEffect(() => {
-    const loadReviews = async () => {
-      try {
-        const data = await fetchReviewsByApiId(api_id);
-        console.log("Fetched review data:", data);
-        const reviewList = data.reviews || data;
-        setReviews(reviewList);
-        setAvgSeverity(data.avgSeverity || null);
-
-        const ratings = {};
-        for (const review of reviewList) {
-          ratings[review.id] = await fetchReviewRating(review.id);
-        }
-        setReviewRatings(ratings);
-
-        if (user && token) {
-          const ratedIds = await fetchRatedReviewIds(user.userId, token);
-          const ratedSet = new Set(
-            ratedIds.filter((id) => reviewList.some((r) => r.id === id))
-          );
-          setRatedReviews(ratedSet);
-        } else {
-          setRatedReviews(new Set());
-        }
-      } catch (err) {
-        console.error("Error fetching reviews:", err.message);
-        setError(true);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadReviews();
-  }, [api_id, user, token]);
-
   const handleRateReview = async (reviewId) => {
     try {
       await rateReview(reviewId, token);
@@ -88,6 +109,17 @@ function DiseasePage() {
       setRecentlyRated((prev) => new Set(prev).add(reviewId));
     } catch (err) {
       console.error("Rating error:", err);
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm("Are you sure you want to delete this review?")) return;
+
+    try {
+      await deleteReview(reviewId, token);
+      setReviews((prev) => prev.filter((r) => r.id !== reviewId));
+    } catch (err) {
+      console.error("Delete failed:", err);
     }
   };
 
@@ -154,11 +186,18 @@ function DiseasePage() {
               {user?.userId && (
                 <>
                   {!ratedReviews.has(review.id) ? (
-                    <button onClick={() => handleRateReview(review.id)}>Helpful</button>
+                    <button onClick={() => handleRateReview(review.id)}>
+                      Helpful
+                    </button>
                   ) : recentlyRated.has(review.id) ? (
                     <p style={{ color: "green" }}>Thanks for your feedback!</p>
                   ) : null}
                 </>
+              )}
+              {user?.userId === review.user_id && (
+                <button onClick={() => handleDeleteReview(review.id)}>
+                  Delete
+                </button>
               )}
             </li>
           ))}

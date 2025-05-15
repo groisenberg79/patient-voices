@@ -9,6 +9,8 @@ const { authenticateToken } = require("../middleware/auth");
 // Submit a review (requires login)
 router.post("/", authenticateToken, submitReview);
 
+router.delete("/:review_id", authenticateToken, deleteReview);
+
 // Fetch reviews for a disease by API ID
 router.get("/:api_id", fetchReviews);
 
