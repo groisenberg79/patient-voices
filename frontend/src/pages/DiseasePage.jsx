@@ -7,6 +7,7 @@ import {
   fetchReviewRating,
   fetchRatedReviewIds,
   deleteReview,
+  updateReview, // new import
 } from "../services/reviewService";
 import { useAuth } from "../context/AuthContext";
 
@@ -27,6 +28,10 @@ function DiseasePage() {
   const [severity, setSeverity] = useState(3);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
+
+  const [editingReviewId, setEditingReviewId] = useState(null);
+  const [editComment, setEditComment] = useState("");
+  const [editSeverity, setEditSeverity] = useState(3);
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -110,6 +115,12 @@ function DiseasePage() {
     }
   };
 
+  const handleEditReview = (review) => {
+    setEditingReviewId(review.id);
+    setEditComment(review.comment);
+    setEditSeverity(review.severity);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError("");
@@ -142,6 +153,25 @@ function DiseasePage() {
     }
   };
 
+  const handleUpdateReview = async (e) => {
+    e.preventDefault();
+    try {
+      const updated = await updateReview(editingReviewId, token, {
+        severity: editSeverity,
+        comment: editComment,
+      });
+
+      setReviews((prev) =>
+        prev.map((r) => (r.id === updated.id ? updated : r))
+      );
+      setEditingReviewId(null);
+      setEditComment("");
+      setEditSeverity(3);
+    } catch (err) {
+      console.error("Failed to update review:", err);
+    }
+  };
+
   if (loading) return <p>Loading reviews...</p>;
   if (error) return <p>Something went wrong. Please try again later.</p>;
 
@@ -164,9 +194,39 @@ function DiseasePage() {
         <ul>
           {reviews.map((review) => (
             <li key={review.id}>
-              <strong>Rating:</strong> {review.severity}/5
-              <br />
-              <strong>Comment:</strong> {review.comment}
+              {editingReviewId === review.id ? (
+                <form onSubmit={handleUpdateReview}>
+                  <label>
+                    Rating:
+                    <input
+                      type="number"
+                      min="1"
+                      max="5"
+                      value={editSeverity}
+                      onChange={(e) => setEditSeverity(Number(e.target.value))}
+                    />
+                  </label>
+                  <br />
+                  <label>
+                    Comment:
+                    <textarea
+                      value={editComment}
+                      onChange={(e) => setEditComment(e.target.value)}
+                    />
+                  </label>
+                  <br />
+                  <button type="submit">Save</button>
+                  <button type="button" onClick={() => setEditingReviewId(null)}>
+                    Cancel
+                  </button>
+                </form>
+              ) : (
+                <>
+                  <strong>Rating:</strong> {review.severity}/5
+                  <br />
+                  <strong>Comment:</strong> {review.comment}
+                </>
+              )}
               <br />
               <strong>Helpful votes:</strong> {reviewRatings[review.id] || 0}
               <br />
@@ -182,9 +242,12 @@ function DiseasePage() {
                 </>
               )}
               {user?.userId === review.user_id && (
-                <button onClick={() => handleDeleteReview(review.id)}>
-                  Delete
-                </button>
+                <>
+                  <button onClick={() => handleDeleteReview(review.id)}>
+                    Delete
+                  </button>
+                  <button onClick={() => handleEditReview(review)}>Edit</button>
+                </>
               )}
             </li>
           ))}

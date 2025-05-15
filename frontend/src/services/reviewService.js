@@ -77,3 +77,16 @@ export const deleteReview = async (reviewId, token) => {
     },
   });
 };
+
+export const updateReview = async (reviewId, token, newData) => {
+  const res = await axios.put(
+    `${BASE_URL}/api/reviews/${reviewId}`,
+    newData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return res.data;
+};

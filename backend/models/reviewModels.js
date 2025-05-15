@@ -31,6 +31,14 @@ const deleteReviewByIdAndUser = async (reviewId, userId) => {
   return result.rowCount > 0;
 };
 
+const updateReviewByIdAndUser = async (reviewId, userId, newSeverity, newComment) => {
+  const result = await pool.query(
+    "UPDATE reviews SET severity = $1, comment = $2, updated_at = NOW() WHERE id = $3 AND user_id = $4 RETURNING *",
+    [newSeverity, newComment, reviewId, userId]
+  );
+  return result.rows[0];
+};
+
 const getReviewsByDiseaseId = async (diseaseId) => {
   const result = await pool.query(
     "SELECT reviews.*, users.email FROM reviews JOIN users ON reviews.user_id = users.id WHERE disease_id = $1 ORDER BY created_at DESC",
@@ -63,4 +71,5 @@ module.exports = {
   hasUserReviewedDisease,
   getAverageSeverity,
   deleteReviewByIdAndUser,
+  updateReviewByIdAndUser,
 };

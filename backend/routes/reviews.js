@@ -4,6 +4,7 @@ const {
   submitReview,
   fetchReviews,
   deleteReview,
+  editReview,
 } = require("../controllers/reviewController");
 const { authenticateToken } = require("../middleware/auth");
 
@@ -11,6 +12,8 @@ const { authenticateToken } = require("../middleware/auth");
 router.post("/", authenticateToken, submitReview);
 
 router.delete("/:review_id", authenticateToken, deleteReview);
+
+router.put("/:review_id", authenticateToken, editReview);
 
 // Fetch reviews for a disease by API ID
 router.get("/:api_id", fetchReviews);

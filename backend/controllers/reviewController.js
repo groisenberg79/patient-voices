@@ -6,6 +6,7 @@ const {
   hasUserReviewedDisease,
   getAverageSeverity,
   deleteReviewByIdAndUser,
+  updateReviewByIdAndUser,
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
@@ -73,8 +74,35 @@ const deleteReview = async (req, res) => {
   }
 };
 
+const editReview = async (req, res) => {
+  const reviewId = req.params.review_id;
+  const userId = req.user.userId;
+  const { severity, comment } = req.body;
+
+  try {
+    const updatedReview = await updateReviewByIdAndUser(
+      reviewId,
+      userId,
+      severity,
+      comment
+    );
+
+    if (!updatedReview) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized or review not found" });
+    }
+
+    res.json(updatedReview);
+  } catch (err) {
+    console.error("Error updating review:", err);
+    res.status(500).json({ error: "Failed to update review" });
+  }
+};
+
 module.exports = {
   submitReview,
   fetchReviews,
   deleteReview,
+  editReview,
 };
