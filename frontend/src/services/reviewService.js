@@ -16,7 +16,14 @@ export const fetchReviewsByApiId = async (api_id) => {
   }
 };
 
-export const submitReview = async ({ token, api_id, name, description, severity, comment }) => {
+export const submitReview = async ({
+  token,
+  api_id,
+  name,
+  description,
+  severity,
+  comment,
+}) => {
   const response = await axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/api/reviews`,
     {
@@ -52,4 +59,13 @@ export const rateReview = async (reviewId, token) => {
 export const fetchReviewRating = async (reviewId) => {
   const res = await axios.get(`${BASE_URL}/api/review-ratings/${reviewId}`);
   return res.data.total;
+};
+
+export const fetchRatedReviewIds = async (userId, token) => {
+  const res = await axios.get(`${BASE_URL}/api/review-ratings/user/${userId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data.ratedReviewIds; // array of IDs
 };

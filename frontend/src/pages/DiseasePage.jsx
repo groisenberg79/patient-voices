@@ -1,6 +1,12 @@
 import { useParams, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { submitReview, fetchReviewsByApiId, rateReview, fetchReviewRating } from "../services/reviewService";
+import {
+  submitReview,
+  fetchReviewsByApiId,
+  rateReview,
+  fetchReviewRating,
+  fetchRatedReviewIds,
+} from "../services/reviewService";
 import { useAuth } from "../context/AuthContext";
 
 function DiseasePage() {
@@ -14,8 +20,6 @@ function DiseasePage() {
   const [avgSeverity, setAvgSeverity] = useState(null);
   // Track which reviews the user has already rated
   const [ratedReviews, setRatedReviews] = useState(new Set());
-  // Track feedback message after voting
-  const [voteMessage, setVoteMessage] = useState({});
   const hasReviewed =
     Array.isArray(reviews) && user
       ? reviews.some((review) => review.user_id === user.userId)
@@ -40,6 +44,10 @@ function DiseasePage() {
           ratings[review.id] = await fetchReviewRating(review.id);
         }
         setReviewRatings(ratings);
+        if (user && token) {
+          const ratedIds = await fetchRatedReviewIds(user.userId, token);
+          setRatedReviews(new Set(ratedIds));
+        }
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
         setError(true);
@@ -57,7 +65,6 @@ function DiseasePage() {
       const updatedCount = await fetchReviewRating(reviewId);
       setReviewRatings((prev) => ({ ...prev, [reviewId]: updatedCount }));
       setRatedReviews((prev) => new Set(prev).add(reviewId));
-      setVoteMessage((prev) => ({ ...prev, [reviewId]: "Thanks for your feedback!" }));
     } catch (err) {
       console.error("Rating error:", err);
     }
@@ -104,7 +111,8 @@ function DiseasePage() {
 
       {avgSeverity !== null && !isNaN(Number(avgSeverity)) && (
         <p>
-          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} / 5
+          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} /
+          5
         </p>
       )}
 
@@ -123,13 +131,13 @@ function DiseasePage() {
               <strong>Helpful votes:</strong> {reviewRatings[review.id] || 0}
               <br />
               {user?.userId && !ratedReviews.has(review.id) && (
-                <button
-                  onClick={() => handleRateReview(review.id)}
-                >
+                <button onClick={() => handleRateReview(review.id)}>
                   Helpful
                 </button>
               )}
-              {voteMessage[review.id] && <p style={{ color: "green" }}>{voteMessage[review.id]}</p>}
+              {user?.userId && ratedReviews.has(review.id) && (
+                <p style={{ color: "green" }}>Thanks for your feedback!</p>
+              )}
             </li>
           ))}
         </ul>
