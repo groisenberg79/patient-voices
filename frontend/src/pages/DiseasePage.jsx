@@ -35,18 +35,23 @@ function DiseasePage() {
     const loadReviews = async () => {
       try {
         const data = await fetchReviewsByApiId(api_id);
-        console.log("Fetched review data:", data); // 👈 Add this
-        setReviews(data.reviews || data);
+        console.log("Fetched review data:", data);
+        const reviewList = data.reviews || data;
+        setReviews(reviewList);
         setAvgSeverity(data.avgSeverity || null);
-        // Fetch and store rating counts for each review
+
         const ratings = {};
-        for (const review of data.reviews || []) {
+        for (const review of reviewList) {
           ratings[review.id] = await fetchReviewRating(review.id);
         }
         setReviewRatings(ratings);
+
         if (user && token) {
           const ratedIds = await fetchRatedReviewIds(user.userId, token);
-          setRatedReviews(new Set(ratedIds));
+          const validRatedIds = ratedIds.filter((id) =>
+            reviewList.some((r) => r.id === id)
+          );
+          setRatedReviews(new Set(validRatedIds));
         }
       } catch (err) {
         console.error("Error fetching reviews:", err.message);
@@ -57,7 +62,7 @@ function DiseasePage() {
     };
 
     loadReviews();
-  }, [api_id]);
+  }, [api_id, user, token]);
 
   const handleRateReview = async (reviewId) => {
     try {
