@@ -33,46 +33,51 @@ function DiseasePage() {
   const [editComment, setEditComment] = useState("");
   const [editSeverity, setEditSeverity] = useState(3);
 
-  useEffect(() => {
-    const loadReviews = async () => {
-      console.log("🚀 loadReviews called with:", { api_id, user, token });
-      try {
-        const data = await fetchReviewsByApiId(api_id);
-        console.log("Fetched review data:", data);
-        const reviewList = data.reviews || data;
-        setReviews(reviewList);
-        setAvgSeverity(data.avgSeverity || null);
+  // Sorting and filtering state
+  const [sortOption, setSortOption] = useState("date");
+  const [showOnlyWithComments, setShowOnlyWithComments] = useState(false);
 
-        const ratings = {};
-        for (const review of reviewList) {
-          ratings[review.id] = await fetchReviewRating(review.id);
-        }
-        setReviewRatings(ratings);
+  // Move loadReviews outside of useEffect and define as standalone function
+  const loadReviews = async (api_id, user, token) => {
+    console.log("🚀 loadReviews called with:", { api_id, user, token });
+    try {
+      const data = await fetchReviewsByApiId(api_id);
+      console.log("Fetched review data:", data);
+      const reviewList = data.reviews || data;
+      setReviews(reviewList);
+      setAvgSeverity(data.avgSeverity || null);
 
-        if (user && token) {
-          const ratedIds = await fetchRatedReviewIds(user.userId, token);
-          const ratedSet = new Set(
-            ratedIds.filter((id) => reviewList.some((r) => r.id === id))
-          );
-          setRatedReviews(ratedSet);
-        } else {
-          setRatedReviews(new Set());
-        }
-      } catch (err) {
-        console.error("Error fetching reviews:", err.message);
-        console.error("api_id used:", api_id);
-        if (err.response?.status === 404) {
-          setReviews([]);
-          setAvgSeverity(null);
-        } else {
-          setError(true);
-        }
-      } finally {
-        setLoading(false);
+      const ratings = {};
+      for (const review of reviewList) {
+        ratings[review.id] = await fetchReviewRating(review.id);
       }
-    };
+      setReviewRatings(ratings);
 
-    loadReviews();
+      if (user && token) {
+        const ratedIds = await fetchRatedReviewIds(user.userId, token);
+        const ratedSet = new Set(
+          ratedIds.filter((id) => reviewList.some((r) => r.id === id))
+        );
+        setRatedReviews(ratedSet);
+      } else {
+        setRatedReviews(new Set());
+      }
+    } catch (err) {
+      console.error("Error fetching reviews:", err.message);
+      console.error("api_id used:", api_id);
+      if (err.response?.status === 404) {
+        setReviews([]);
+        setAvgSeverity(null);
+      } else {
+        setError(true);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadReviews(api_id, user, token);
   }, [api_id, user, token]);
 
   const hasReviewed =
@@ -91,6 +96,24 @@ function DiseasePage() {
       </div>
     );
   }
+
+  // Filtering and sorting logic for reviews
+  const filteredAndSortedReviews = reviews
+    .filter((review) => {
+      if (showOnlyWithComments) {
+        return review.comment && review.comment.trim() !== "";
+      }
+      return true;
+    })
+    .sort((a, b) => {
+      if (sortOption === "severity") {
+        return b.severity - a.severity;
+      } else if (sortOption === "helpfulness") {
+        return (reviewRatings[b.id] || 0) - (reviewRatings[a.id] || 0);
+      } else {
+        return new Date(b.created_at) - new Date(a.created_at);
+      }
+    });
 
   const handleRateReview = async (reviewId) => {
     try {
@@ -181,18 +204,37 @@ function DiseasePage() {
 
       {avgSeverity !== null && !isNaN(Number(avgSeverity)) && (
         <p>
-          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} /
-          5
+          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} / 5
         </p>
       )}
 
-      {reviews.length === 0 ? (
+      {/* Sorting and filtering controls */}
+      <div style={{ marginBottom: "1rem" }}>
+        <label>
+          Sort by:{" "}
+          <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+            <option value="date">Newest</option>
+            <option value="severity">Severity</option>
+            <option value="helpfulness">Helpfulness</option>
+          </select>
+        </label>
+        <label style={{ marginLeft: "1rem" }}>
+          <input
+            type="checkbox"
+            checked={showOnlyWithComments}
+            onChange={(e) => setShowOnlyWithComments(e.target.checked)}
+          />{" "}
+          Show only reviews with comments
+        </label>
+      </div>
+
+      {filteredAndSortedReviews.length === 0 ? (
         <p>
           <em>No reviews yet. Be the first to review this condition.</em>
         </p>
       ) : (
         <ul>
-          {reviews.map((review) => (
+          {filteredAndSortedReviews.map((review) => (
             <li key={review.id}>
               {editingReviewId === review.id ? (
                 <form onSubmit={handleUpdateReview}>
