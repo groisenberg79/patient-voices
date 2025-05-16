@@ -30,6 +30,18 @@ body {
   min-height: 100vh;
 }
 
+.app-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.page-title {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
@@ -65,4 +77,36 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+h2 {
+  font-size: 2em;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+h3 {
+  font-size: 1.5em;
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
+}
+
+input,
+textarea {
+  font-family: inherit;
+  font-size: 1em;
+  padding: 0.5em;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+}
+
+.success {
+  color: green;
+  margin-top: 1rem;
+}
+
+.error {
+  color: red;
+  margin-top: 1rem;
 }
