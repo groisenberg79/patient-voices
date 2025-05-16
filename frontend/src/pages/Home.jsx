@@ -32,7 +32,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div className="main-content">
       <h1>Patient Voices</h1>
       <p>Search for a disease to read or share experiences.</p>
 
