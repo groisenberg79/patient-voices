@@ -11,6 +11,8 @@ app.use(
   })
 );
 
+app.options("*", cors());
+
 const userRoutes = require("./routes/users");
 const reviewRoutes = require("./routes/reviews");
 const diseaseRoutes = require("./routes/disease");
