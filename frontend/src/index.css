@@ -103,6 +103,10 @@ textarea {
   margin-bottom: 1rem;
 }
 
+li {
+  list-style: none;
+}
+
 .success {
   color: green;
   margin-top: 1rem;

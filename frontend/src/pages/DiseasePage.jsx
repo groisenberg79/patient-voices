@@ -204,7 +204,8 @@ function DiseasePage() {
 
       {avgSeverity !== null && !isNaN(Number(avgSeverity)) && (
         <p>
-          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} / 5
+          <strong>Average severity:</strong> {Number(avgSeverity).toFixed(1)} /
+          5
         </p>
       )}
 
@@ -212,7 +213,10 @@ function DiseasePage() {
       <div style={{ marginBottom: "1rem" }}>
         <label>
           Sort by:{" "}
-          <select value={sortOption} onChange={(e) => setSortOption(e.target.value)}>
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+          >
             <option value="date">Newest</option>
             <option value="severity">Severity</option>
             <option value="helpfulness">Helpfulness</option>
@@ -258,15 +262,18 @@ function DiseasePage() {
                   </label>
                   <br />
                   <button type="submit">Save</button>
-                  <button type="button" onClick={() => setEditingReviewId(null)}>
+                  <button
+                    type="button"
+                    onClick={() => setEditingReviewId(null)}
+                  >
                     Cancel
                   </button>
                 </form>
               ) : (
                 <>
-                  <strong>Rating:</strong> {review.severity}/5
+                  <strong>Severity:</strong> {review.severity}/5
                   <br />
-                  <strong>Comment:</strong> {review.comment}
+                  <strong>Review:</strong> {review.comment}
                 </>
               )}
               <br />
@@ -274,7 +281,8 @@ function DiseasePage() {
               <br />
               {user?.userId && user.userId !== review.user_id && (
                 <>
-                  {!ratedReviews.has(review.id) && !recentlyRated.has(review.id) ? (
+                  {!ratedReviews.has(review.id) &&
+                  !recentlyRated.has(review.id) ? (
                     <button onClick={() => handleRateReview(review.id)}>
                       Helpful
                     </button>
@@ -313,7 +321,7 @@ function DiseasePage() {
           </label>
           <br />
           <label>
-            Comment:
+            Review:
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
