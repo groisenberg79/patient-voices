@@ -293,10 +293,18 @@ function DiseasePage() {
               )}
               {user?.userId === review.user_id && (
                 <>
-                  <button onClick={() => handleDeleteReview(review.id)}>
+                  <button
+                    id="delete-button"
+                    onClick={() => handleDeleteReview(review.id)}
+                  >
                     Delete
                   </button>
-                  <button onClick={() => handleEditReview(review)}>Edit</button>
+                  <button
+                    id="edit-button"
+                    onClick={() => handleEditReview(review)}
+                  >
+                    Edit
+                  </button>
                 </>
               )}
             </div>
