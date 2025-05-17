@@ -237,13 +237,13 @@ function DiseasePage() {
           <em>No reviews yet. Be the first to review this condition.</em>
         </p>
       ) : (
-        <ul>
+        <div>
           {filteredAndSortedReviews.map((review) => (
-            <li key={review.id}>
+            <div className="review-box" key={review.id}>
               {editingReviewId === review.id ? (
                 <form onSubmit={handleUpdateReview}>
                   <label>
-                    Rating:
+                    Severity:
                     <input
                       type="number"
                       min="1"
@@ -254,7 +254,7 @@ function DiseasePage() {
                   </label>
                   <br />
                   <label>
-                    Comment:
+                    Review:
                     <textarea
                       value={editComment}
                       onChange={(e) => setEditComment(e.target.value)}
@@ -299,9 +299,9 @@ function DiseasePage() {
                   <button onClick={() => handleEditReview(review)}>Edit</button>
                 </>
               )}
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       <hr />
