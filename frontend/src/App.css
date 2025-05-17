@@ -63,11 +63,6 @@ button:hover {
   background-color: #005fa3;
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
 .main-content {
   display: flex;
   flex-direction: column;
