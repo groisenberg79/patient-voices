@@ -20,7 +20,7 @@ function Navbar() {
         </>
       ) : (
         <>
-          <button onClick={handleLogout}>Logout</button>
+          <button id="logout-button" onClick={handleLogout}>Logout</button>
           <span style={{ marginLeft: "10px", fontStyle: "italic" }}>
             Logged in as: {user.email}
           </span>
