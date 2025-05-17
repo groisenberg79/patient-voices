@@ -59,6 +59,7 @@ button {
   font-family: inherit;
   background-color: #646cff;
   cursor: pointer;
+  margin-right: 3px;
   transition: border-color 0.25s;
 }
 button:hover {
