@@ -34,6 +34,7 @@ function Home() {
   return (
     <div className="main-content">
       <h1>Patient Voices</h1>
+      <p className="tagline">A space for patients to share their experiences and insights.</p>
       <p>Search for a disease to read or share experiences.</p>
 
       <input
