@@ -116,3 +116,11 @@ li {
   color: red;
   margin-top: 1rem;
 }
+
+.review-box {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  background-color: #f9f9f9;
+}
