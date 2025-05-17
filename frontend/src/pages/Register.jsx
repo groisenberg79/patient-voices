@@ -33,9 +33,14 @@ function Register() {
       }
     } catch (err) {
       console.error(err);
-      const message =
-        err.response?.data?.message ||
-        "Registration failed. Email may already be in use.";
+      let message = "Registration failed.";
+      if (err.response?.data?.message) {
+        message = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        message = err.response.data.error;
+      } else if (err.message) {
+        message = err.message;
+      }
       setError(message);
     }
   };

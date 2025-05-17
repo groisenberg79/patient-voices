@@ -20,13 +20,14 @@ function Login() {
       navigate("/");
     } catch (err) {
       console.error(err);
-      setError("Invalid email or password.");
+      setError(err.response?.data?.message || "Invalid email or password.");
     }
   };
 
   return (
     <div>
       <h2>Login</h2>
+      {error && <p style={{ color: "red" }}>{error}</p>}
       <form onSubmit={handleLogin}>
         <label>Email:</label>
         <input
@@ -43,7 +44,6 @@ function Login() {
         />
         <br />
         <button type="submit">Login</button>
-        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </div>
   );

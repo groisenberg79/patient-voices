@@ -23,11 +23,11 @@ function DiseasePage() {
   const [ratedReviews, setRatedReviews] = useState(new Set());
   const [recentlyRated, setRecentlyRated] = useState(new Set());
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [comment, setComment] = useState("");
   const [severity, setSeverity] = useState(3);
   const [submitError, setSubmitError] = useState("");
   const [submitSuccess, setSubmitSuccess] = useState("");
+  const [globalError, setGlobalError] = useState("");
 
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [editComment, setEditComment] = useState("");
@@ -39,10 +39,8 @@ function DiseasePage() {
 
   // Move loadReviews outside of useEffect and define as standalone function
   const loadReviews = async (api_id, user, token) => {
-    console.log("🚀 loadReviews called with:", { api_id, user, token });
     try {
       const data = await fetchReviewsByApiId(api_id);
-      console.log("Fetched review data:", data);
       const reviewList = data.reviews || data;
       setReviews(reviewList);
       setAvgSeverity(data.avgSeverity || null);
@@ -69,7 +67,7 @@ function DiseasePage() {
         setReviews([]);
         setAvgSeverity(null);
       } else {
-        setError(true);
+        setGlobalError("Could not load reviews. Please try again later.");
       }
     } finally {
       setLoading(false);
@@ -134,7 +132,7 @@ function DiseasePage() {
       await deleteReview(reviewId, token);
       setReviews((prev) => prev.filter((r) => r.id !== reviewId));
     } catch (err) {
-      console.error("Delete failed:", err);
+      setGlobalError("Failed to delete review. Please try again later.");
     }
   };
 
@@ -171,7 +169,7 @@ function DiseasePage() {
       if (err.response?.status === 400 || err.response?.status === 403) {
         setSubmitError("You have already submitted a review for this disease.");
       } else {
-        setSubmitError("Could not submit review. Are you logged in?");
+        setGlobalError("Failed to submit review. Please try again later.");
       }
     }
   };
@@ -191,15 +189,17 @@ function DiseasePage() {
       setEditComment("");
       setEditSeverity(3);
     } catch (err) {
-      console.error("Failed to update review:", err);
+      setGlobalError("Failed to update review. Please try again later.");
     }
   };
 
-  if (loading) return <p>Loading reviews...</p>;
-  if (error) return <p>Something went wrong. Please try again later.</p>;
+  if (loading) return <div className="spinner"></div>;
 
   return (
     <div>
+      {globalError && (
+        <p style={{ color: "red", fontWeight: "bold" }}>{globalError}</p>
+      )}
       <h2>Reviews for Disease ID: {api_id}</h2>
 
       {avgSeverity !== null && !isNaN(Number(avgSeverity)) && (
@@ -329,7 +329,10 @@ function DiseasePage() {
           </label>
           <br />
           <div style={{ marginTop: "1rem" }}>
-            <label htmlFor="review" style={{ display: "block", marginBottom: "0.25rem" }}>
+            <label
+              htmlFor="review"
+              style={{ display: "block", marginBottom: "0.25rem" }}
+            >
               Review:
             </label>
             <textarea
