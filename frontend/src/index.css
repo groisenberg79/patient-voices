@@ -129,17 +129,12 @@ li {
   color: white;
   background-color: #dc3545;
   border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  margin-right: 8px;
 }
 
 #edit-button {
   color: white;
   background-color: #007bff;
   border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
 }
 
 #logout-button {
