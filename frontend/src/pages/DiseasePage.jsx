@@ -320,12 +320,17 @@ function DiseasePage() {
             />
           </label>
           <br />
-          <label htmlFor="review">Review:</label>
-          <textarea
-            id="review"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-          />
+          <div style={{ marginTop: "1rem" }}>
+            <label htmlFor="review" style={{ display: "block", marginBottom: "0.25rem" }}>
+              Review:
+            </label>
+            <textarea
+              id="review"
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              style={{ width: "100%", minHeight: "100px" }}
+            />
+          </div>
           <br />
           <button type="submit">Submit Review</button>
 
