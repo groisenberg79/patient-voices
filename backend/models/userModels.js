@@ -17,4 +17,12 @@ const getUserById = async (id) => {
   return result.rows[0];
 };
 
-module.exports = { findUserByEmail, createUser, getUserById };
+const updateUserProfile = async (id, name, country) => {
+  const result = await pool.query(
+    "UPDATE users SET name = $1, country = $2 WHERE id = $3 RETURNING id, email, name, country",
+    [name, country, id]
+  );
+  return result.rows[0];
+};
+
+module.exports = { findUserByEmail, createUser, getUserById, updateUserProfile };

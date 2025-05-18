@@ -75,4 +75,23 @@ const getUserProfile = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile };
+const { updateUserProfile } = require("../models/userModels");
+
+const updateUser = async (req, res) => {
+  const userId = req.user?.id;
+  const { name, country } = req.body;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: No user ID provided" });
+  }
+
+  try {
+    await updateUserProfile(userId, name, country);
+    res.json({ message: "Profile updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error while updating profile" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile, updateUser };
