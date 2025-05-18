@@ -1,8 +1,9 @@
+const { getUserById } = require("../models/userModels");
 const { findUserByEmail, createUser } = require("../models/userModels");
 const { hashPassword, checkPassword, getToken } = require("../middleware/auth");
 
 const registerUser = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password, name, country } = req.body;
 
   try {
     // Check if the user already exists
@@ -16,12 +17,12 @@ const registerUser = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Insert the new user into the DB
-    await createUser(email, hashedPassword);
+    await createUser(email, hashedPassword, name, country);
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Server error during registration" });
+    res.status(500).json({ error: "Server error during registration. Please check input fields." });
   }
 };
 
@@ -52,4 +53,26 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser };
+const getUserProfile = async (req, res) => {
+  const userId = req.user?.id;
+
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized: No user ID provided" });
+  }
+
+  try {
+    const user = await getUserById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const { email, name, country } = user;
+    res.json({ email, name, country });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error while retrieving user profile" });
+  }
+};
+
+module.exports = { registerUser, loginUser, getUserProfile };
