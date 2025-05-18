@@ -271,8 +271,8 @@ function DiseasePage() {
                 </form>
               ) : (
                 <>
-                  <strong>Severity:</strong> {review.severity}/5
-                  <br />
+                  <p><strong>Severity:</strong> {review.severity}/5</p>
+                  <p><strong>By:</strong> {review.user?.username || "Unknown"}</p>
                   <strong>Review:</strong> {review.comment}
                 </>
               )}

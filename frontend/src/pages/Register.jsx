@@ -7,6 +7,7 @@ function Register() {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [country, setCountry] = useState("");
+  const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { login } = useAuth();
@@ -22,6 +23,7 @@ function Register() {
         password,
         name,
         country,
+        username,
       });
 
       if (response.data) {
@@ -45,7 +47,11 @@ function Register() {
       } else if (err.message) {
         message = err.message;
       }
-      setError(message);
+      if (message.toLowerCase().includes("username")) {
+        setError("Username is already taken.");
+      } else {
+        setError(message);
+      }
     }
   };
 
@@ -66,6 +72,14 @@ function Register() {
             type="text"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
+            required
+          />
+        </label><br />
+        <label>Username:
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </label><br />
