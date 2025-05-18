@@ -3,7 +3,7 @@ const { findUserByEmail, createUser } = require("../models/userModels");
 const { hashPassword, checkPassword, getToken } = require("../middleware/auth");
 
 const registerUser = async (req, res) => {
-  const { email, password, name, country } = req.body;
+  const { email, password, name, country, username } = req.body;
 
   try {
     // Check if the user already exists
@@ -17,7 +17,7 @@ const registerUser = async (req, res) => {
     const hashedPassword = await hashPassword(password);
 
     // Insert the new user into the DB
-    await createUser(email, hashedPassword, name, country);
+    await createUser(email, hashedPassword, name, country, username);
 
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
@@ -67,8 +67,8 @@ const getUserProfile = async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    const { email, name, country } = user;
-    res.json({ email, name, country });
+    const { email, name, country, username } = user;
+    res.json({ email, name, country, username });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error while retrieving user profile" });

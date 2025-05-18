@@ -41,7 +41,7 @@ const updateReviewByIdAndUser = async (reviewId, userId, newSeverity, newComment
 
 const getReviewsByDiseaseId = async (diseaseId) => {
   const result = await pool.query(
-    "SELECT reviews.*, users.email FROM reviews JOIN users ON reviews.user_id = users.id WHERE disease_id = $1 ORDER BY created_at DESC",
+    "SELECT reviews.*, users.username FROM reviews JOIN users ON reviews.user_id = users.id WHERE disease_id = $1 ORDER BY created_at DESC",
     [diseaseId]
   );
   return result.rows;

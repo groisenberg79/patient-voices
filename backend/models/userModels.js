@@ -5,21 +5,21 @@ const findUserByEmail = async (email) => {
   return result.rows[0];
 };
 
-const createUser = async (email, hashedPassword, name, country) => {
+const createUser = async (email, hashedPassword, name, country, username) => {
   await pool.query(
-    "INSERT INTO users (email, password, name, country) VALUES ($1, $2, $3, $4)",
-    [email, hashedPassword, name, country]
+    "INSERT INTO users (email, password, name, country, username) VALUES ($1, $2, $3, $4, $5)",
+    [email, hashedPassword, name, country, username]
   );
 };
 
 const getUserById = async (id) => {
-  const result = await pool.query("SELECT id, email, name, country FROM users WHERE id = $1", [id]);
+  const result = await pool.query("SELECT id, email, name, country, username FROM users WHERE id = $1", [id]);
   return result.rows[0];
 };
 
 const updateUserProfile = async (id, name, country) => {
   const result = await pool.query(
-    "UPDATE users SET name = $1, country = $2 WHERE id = $3 RETURNING id, email, name, country",
+    "UPDATE users SET name = $1, country = $2 WHERE id = $3 RETURNING id, email, name, country, username",
     [name, country, id]
   );
   return result.rows[0];
