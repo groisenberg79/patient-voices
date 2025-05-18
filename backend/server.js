@@ -4,9 +4,15 @@ const cors = require("cors");
 
 const app = express();
 
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://patient-voices-frontend.onrender.com"
+];
+
 app.use(
   cors({
-    origin: "https://patient-voices-frontend.onrender.com",
+    origin: allowedOrigins,
     credentials: true,
   })
 );

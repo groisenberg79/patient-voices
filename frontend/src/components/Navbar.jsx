@@ -20,6 +20,7 @@ function Navbar() {
         </>
       ) : (
         <>
+          <Link to="/profile" style={{ marginRight: "10px" }}>Your Profile</Link>
           <button id="logout-button" onClick={handleLogout}>Logout</button>
           <span style={{ marginLeft: "10px", fontStyle: "italic" }}>
             Logged in as: {user.email}

@@ -5,6 +5,8 @@ import { useAuth } from "../context/AuthContext";
 function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [country, setCountry] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const { login } = useAuth();
@@ -15,9 +17,11 @@ function Register() {
     setSuccess("");
 
     try {
-      const response = await axios.post("https://patient-voices-backend.onrender.com/api/users/register", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users/register`, {
         email,
         password,
+        name,
+        country,
       });
 
       if (response.data) {
@@ -49,6 +53,22 @@ function Register() {
     <div>
       <h2>Register</h2>
       <form onSubmit={handleSubmit}>
+        <label>Name:
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+        </label><br />
+        <label>Country:
+          <input
+            type="text"
+            value={country}
+            onChange={(e) => setCountry(e.target.value)}
+            required
+          />
+        </label><br />
         <label>Email:
           <input
             type="email"
