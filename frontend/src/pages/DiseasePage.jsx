@@ -200,7 +200,7 @@ function DiseasePage() {
       {globalError && (
         <p style={{ color: "red", fontWeight: "bold" }}>{globalError}</p>
       )}
-      <h2>Reviews for Disease ID: {api_id}</h2>
+      <h2>Reviews for {diseaseName}</h2>
 
       {avgSeverity !== null && !isNaN(Number(avgSeverity)) && (
         <p>
@@ -271,8 +271,12 @@ function DiseasePage() {
                 </form>
               ) : (
                 <>
-                  <p><strong>Severity:</strong> {review.severity}/5</p>
-                  <p><strong>By:</strong> {review.user?.username || "Unknown"}</p>
+                  <p>
+                    <strong>Severity:</strong> {review.severity}/5
+                  </p>
+                  <p>
+                    <strong>By:</strong> {review.user?.username || "Unknown"}
+                  </p>
                   <strong>Review:</strong> {review.comment}
                 </>
               )}
@@ -318,7 +322,7 @@ function DiseasePage() {
       {user?.userId && !hasReviewed ? (
         <form onSubmit={handleSubmit}>
           <label>
-            Rating (1–5):
+            Severity (1–5):
             <input
               type="number"
               min="1"

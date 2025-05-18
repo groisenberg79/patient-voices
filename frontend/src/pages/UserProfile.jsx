@@ -98,6 +98,9 @@ function UserProfile() {
             <strong>Name:</strong> {profile.name}
           </p>
           <p>
+            <strong>Username:</strong> {profile.username}
+          </p>
+          <p>
             <strong>Email:</strong> {profile.email}
           </p>
           <p>
