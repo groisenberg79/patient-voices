@@ -15,12 +15,28 @@ const createDisease = async (apiId, name, description) => {
   return result.rows[0];
 };
 
-const createReview = async (userId, diseaseId, severity, comment) => {
+const createReview = async (userId, apiId, severity, comment) => {
   const result = await pool.query(
-    "INSERT INTO reviews (user_id, disease_id, severity, comment) VALUES ($1, $2, $3, $4) RETURNING *",
-    [userId, diseaseId, severity, comment]
+    "INSERT INTO reviews (user_id, api_id, severity, comment) VALUES ($1, $2, $3, $4) RETURNING *",
+    [userId, apiId, severity, comment]
   );
   return result.rows[0];
+};
+
+const getReviewsByApiId = async (apiId) => {
+  const result = await pool.query(
+    "SELECT reviews.*, users.username FROM reviews JOIN users ON reviews.user_id = users.id WHERE api_id = $1 ORDER BY created_at DESC",
+    [apiId]
+  );
+  return result.rows;
+};
+
+const getAverageSeverityByApiId = async (apiId) => {
+  const result = await pool.query(
+    "SELECT AVG(severity) AS avg FROM reviews WHERE api_id = $1",
+    [apiId]
+  );
+  return result.rows[0].avg;
 };
 
 const deleteReviewByIdAndUser = async (reviewId, userId) => {
@@ -67,6 +83,8 @@ module.exports = {
   findDiseaseByApiId,
   createDisease,
   createReview,
+  getReviewsByApiId,
+  getAverageSeverityByApiId,
   getReviewsByDiseaseId,
   hasUserReviewedDisease,
   getAverageSeverity,

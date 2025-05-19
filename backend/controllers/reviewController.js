@@ -7,6 +7,8 @@ const {
   getAverageSeverity,
   deleteReviewByIdAndUser,
   updateReviewByIdAndUser,
+  getReviewsByApiId,
+  getAverageSeverityByApiId,
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
@@ -30,8 +32,8 @@ const submitReview = async (req, res) => {
         .status(400)
         .json({ error: "You have already reviewed this disease." });
     }
-    // Translate api_id to internal disease.id; this mapping allows reviews to be stored consistently
-    const newReview = await createReview(userId, disease.id, severity, comment);
+    // Store review using api_id directly
+    const newReview = await createReview(userId, api_id, severity, comment);
     console.log("New review created:", newReview);
     res.status(201).json(newReview);
   } catch (err) {
@@ -45,15 +47,8 @@ const fetchReviews = async (req, res) => {
   console.log("API ID from request:", api_id);
 
   try {
-    const disease = await findDiseaseByApiId(api_id);
-    console.log("Disease found:", disease);
-
-    if (!disease) {
-      return res.status(404).json({ error: "Disease not found in database" });
-    }
-
-    const reviews = await getReviewsByDiseaseId(disease.id);
-    const avgSeverity = await getAverageSeverity(disease.id);
+    const reviews = await getReviewsByApiId(api_id);
+    const avgSeverity = await getAverageSeverityByApiId(api_id);
     res.json({ reviews, avgSeverity });
   } catch (err) {
     console.error(err);
