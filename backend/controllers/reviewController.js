@@ -10,14 +10,18 @@ const {
 } = require("../models/reviewModels");
 
 const submitReview = async (req, res) => {
+  // api_id comes from the frontend, disease_id is resolved server-side
   const { api_id, name, description, severity, comment } = req.body;
   const userId = req.user.userId; // from JWT middleware
 
   try {
+    console.log("Looking up disease by api_id:", api_id);
     let disease = await findDiseaseByApiId(api_id);
 
     if (!disease) {
+      console.log("Disease not found. Creating new disease...");
       disease = await createDisease(api_id, name, description);
+      console.log("New disease created:", disease);
     }
     const alreadyReviewed = await hasUserReviewedDisease(userId, disease.id);
 
@@ -26,8 +30,9 @@ const submitReview = async (req, res) => {
         .status(400)
         .json({ error: "You have already reviewed this disease." });
     }
+    // Translate api_id to internal disease.id; this mapping allows reviews to be stored consistently
     const newReview = await createReview(userId, disease.id, severity, comment);
-
+    console.log("New review created:", newReview);
     res.status(201).json(newReview);
   } catch (err) {
     console.error(err);
