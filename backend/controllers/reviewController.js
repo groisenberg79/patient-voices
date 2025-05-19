@@ -48,10 +48,12 @@ const fetchReviews = async (req, res) => {
 
   try {
     const reviews = await getReviewsByApiId(api_id);
+    console.log("Fetched reviews:", reviews);
     const avgSeverity = await getAverageSeverityByApiId(api_id);
+    console.log("Average severity:", avgSeverity);
     res.json({ reviews, avgSeverity });
   } catch (err) {
-    console.error(err);
+    console.error("❌ Error in fetchReviews:", err);
     res.status(500).json({ error: "Error fetching reviews" });
   }
 };
