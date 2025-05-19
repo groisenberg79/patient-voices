@@ -14,7 +14,7 @@ const {
 const submitReview = async (req, res) => {
   // api_id comes from the frontend, disease_id is resolved server-side
   const { api_id, name, description, severity, comment } = req.body;
-  const userId = req.session.user?.id;
+  const userId = req.user?.id;
   if (!userId) {
     return res.status(401).json({ error: "Unauthorized - user not logged in" });
   }
