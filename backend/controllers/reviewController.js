@@ -1,10 +1,9 @@
+const pool = require("../db");
 const {
   findDiseaseByApiId,
   createDisease,
   createReview,
-  getReviewsByDiseaseId,
   hasUserReviewedApiId,
-  getAverageSeverity,
   deleteReviewByIdAndUser,
   updateReviewByIdAndUser,
   getReviewsByApiId,
@@ -38,7 +37,9 @@ const submitReview = async (req, res) => {
     // Store review using api_id directly
     const newReview = await createReview(userId, api_id, severity, comment);
     console.log("New review created:", newReview);
-    res.status(201).json(newReview);
+    const userResult = await pool.query("SELECT username FROM users WHERE id = $1", [userId]);
+    const username = userResult.rows[0]?.username;
+    res.status(201).json({ ...newReview, username });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Error submitting review" });
