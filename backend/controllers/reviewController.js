@@ -14,7 +14,10 @@ const {
 const submitReview = async (req, res) => {
   // api_id comes from the frontend, disease_id is resolved server-side
   const { api_id, name, description, severity, comment } = req.body;
-  const userId = req.user.userId; // from JWT middleware
+  const userId = req.session.user?.id;
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized - user not logged in" });
+  }
 
   try {
     console.log("Looking up disease by api_id:", api_id);
