@@ -23,10 +23,23 @@ const createDisease = async (apiId, name, description) => {
 };
 
 const createReview = async (userId, apiId, severity, comment) => {
-  const result = await pool.query(
-    "INSERT INTO reviews (user_id, api_id, severity, comment) VALUES ($1, $2, $3, $4) RETURNING *",
-    [userId, apiId, severity, comment]
+  // Lookup the disease by api_id
+  const diseaseResult = await pool.query(
+    "SELECT id FROM diseases WHERE api_id = $1",
+    [apiId]
   );
+  const diseaseId = diseaseResult.rows[0]?.id;
+
+  if (!diseaseId) {
+    throw new Error("Disease not found for the given api_id");
+  }
+
+  // Insert the review with both api_id and disease_id
+  const result = await pool.query(
+    "INSERT INTO reviews (user_id, api_id, disease_id, severity, comment) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+    [userId, apiId, diseaseId, severity, comment]
+  );
+
   return result.rows[0];
 };
 
