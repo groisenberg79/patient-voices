@@ -3,7 +3,7 @@ const {
   createDisease,
   createReview,
   getReviewsByDiseaseId,
-  hasUserReviewedDisease,
+  hasUserReviewedApiId,
   getAverageSeverity,
   deleteReviewByIdAndUser,
   updateReviewByIdAndUser,
@@ -25,7 +25,7 @@ const submitReview = async (req, res) => {
       disease = await createDisease(api_id, name, description);
       console.log("New disease created:", disease);
     }
-    const alreadyReviewed = await hasUserReviewedDisease(userId, disease.id);
+    const alreadyReviewed = await hasUserReviewedApiId(userId, api_id);
 
     if (alreadyReviewed) {
       return res

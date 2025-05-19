@@ -1,3 +1,10 @@
+const hasUserReviewedApiId = async (userId, apiId) => {
+  const result = await pool.query(
+    "SELECT 1 FROM reviews WHERE user_id = $1 AND api_id = $2",
+    [userId, apiId]
+  );
+  return result.rows.length > 0;
+};
 const pool = require("../db");
 
 const findDiseaseByApiId = async (apiId) => {
@@ -63,14 +70,6 @@ const getReviewsByDiseaseId = async (diseaseId) => {
   return result.rows;
 };
 
-const hasUserReviewedDisease = async (userId, diseaseId) => {
-  const result = await pool.query(
-    "SELECT 1 FROM reviews WHERE user_id = $1 AND disease_id = $2",
-    [userId, diseaseId]
-  );
-  return result.rows.length > 0;
-};
-
 const getAverageSeverity = async (diseaseId) => {
   const result = await pool.query(
     "SELECT AVG(severity) AS avg FROM reviews WHERE disease_id = $1",
@@ -86,8 +85,8 @@ module.exports = {
   getReviewsByApiId,
   getAverageSeverityByApiId,
   getReviewsByDiseaseId,
-  hasUserReviewedDisease,
   getAverageSeverity,
   deleteReviewByIdAndUser,
   updateReviewByIdAndUser,
+  hasUserReviewedApiId,
 };
