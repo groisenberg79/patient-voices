@@ -275,6 +275,14 @@ function DiseasePage() {
                     <strong>By:</strong> {review.username || "Unknown"}
                   </p>
                   <p>
+                    <strong>Reviewed on:</strong>{" "}
+                    {new Date(review.created_at).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <p>
                     <strong>Severity:</strong> {review.severity}/5
                   </p>
                   <strong>Review:</strong> {review.comment}

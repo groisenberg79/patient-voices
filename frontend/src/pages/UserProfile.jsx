@@ -34,7 +34,7 @@ function UserProfile() {
     fetchProfile(setProfile, setLoading, setError);
   }, []);
 
-  if (loading) return <p>Loading profile...</p>;
+  if (loading) return <div className="spinner"></div>;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   // Handle profile update
