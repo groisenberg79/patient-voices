@@ -64,7 +64,7 @@ const fetchReviews = async (req, res) => {
 
 const deleteReview = async (req, res) => {
   const reviewId = req.params.review_id;
-  const userId = req.user.userId;
+  const userId = req.user.id;
 
   try {
     const deleted = await deleteReviewByIdAndUser(reviewId, userId);
@@ -82,7 +82,7 @@ const deleteReview = async (req, res) => {
 
 const editReview = async (req, res) => {
   const reviewId = req.params.review_id;
-  const userId = req.user.userId;
+  const userId = req.user.id;
   const { severity, comment } = req.body;
 
   try {
