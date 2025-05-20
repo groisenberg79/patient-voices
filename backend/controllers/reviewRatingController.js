@@ -6,7 +6,7 @@ const {
 } = require("../models/reviewRatingsModel");
 
 const rateReview = async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user.id;
   const { review_id } = req.params;
 
   try {
